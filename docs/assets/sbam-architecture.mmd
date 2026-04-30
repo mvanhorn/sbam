@@ -1,0 +1,46 @@
+---
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#0F766E"
+    primaryTextColor: "#FFFFFF"
+    primaryBorderColor: "#0F766E"
+    lineColor: "#374151"
+    fontSize: "22px"
+    fontFamily: "Inter, Helvetica, Arial, sans-serif"
+    clusterBkg: "#F0FDFA"
+    clusterBorder: "#0F766E"
+  flowchart:
+    nodeSpacing: 70
+    rankSpacing: 100
+    padding: 25
+    htmlLabels: true
+---
+flowchart LR
+    SOLCAST[["☀️ Solcast<br/><span style='font-size:15px;color:#6B7280'>solar forecast API</span>"]]
+
+    subgraph HOME["&nbsp; 🏠 your home &nbsp; · &nbsp; fully local &nbsp; · &nbsp; no cloud &nbsp;"]
+      direction LR
+      SBAM(("⚡<br/><b>sbam</b><br/><span style='font-size:14px'>v2.0.0</span>"))
+      FRONIUS["🔌 <b>Fronius Gen24+</b><br/><span style='font-size:15px;color:#6B7280'>inverter + battery</span>"]
+      BROKER["📡 <b>MQTT broker</b><br/><span style='font-size:15px;color:#6B7280'>Mosquitto</span>"]
+      HA["🏠 <b>Home Assistant</b><br/><span style='font-size:15px;color:#6B7280'>auto-discovered<br/>sensors &amp; buttons</span>"]
+      NR["🧩 <b>Node-RED · n8n</b><br/><span style='font-size:15px;color:#6B7280'>your automations</span>"]
+    end
+
+    SOLCAST -- "HTTPS" --> SBAM
+    SBAM <-- "Modbus TCP · read SoC · write charge" --> FRONIUS
+    SBAM -- "publish · state · error · availability" --> BROKER
+    BROKER -. "subscribe · cmd / refresh · charge · pause" .-> SBAM
+    BROKER --> HA
+    BROKER <--> NR
+
+    classDef sbam fill:#0F766E,stroke:#0F766E,stroke-width:4px,color:#FFFFFF
+    classDef cloud fill:#FEF3C7,stroke:#F59E0B,stroke-width:2px,color:#1F2937
+    classDef local fill:#FFFFFF,stroke:#0F766E,stroke-width:2px,color:#1F2937
+
+    class SBAM sbam
+    class SOLCAST cloud
+    class FRONIUS,BROKER,HA,NR local
+
+    linkStyle default stroke-width:2px
